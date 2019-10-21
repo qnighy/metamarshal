@@ -5,7 +5,7 @@ class MetamarshalTest < Minitest::Test
     refute_nil ::Metamarshal::VERSION
   end
 
-  def test_it_does_something_useful
-    assert false
+  def test_parse_nil
+    assert_nil ::Metamarshal.parse("\x04\x080")
   end
 end
