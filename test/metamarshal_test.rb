@@ -1,6 +1,8 @@
 require "test_helper"
 
 class MetamarshalTest < Minitest::Test
+  include SyntaxHelper
+
   def test_that_it_has_a_version_number
     refute_nil ::Metamarshal::VERSION
   end
@@ -47,6 +49,12 @@ class MetamarshalTest < Minitest::Test
     assert_equal(-34567, ::Metamarshal.parse("\x04\x08i\xFE\xF9\x78"))
     assert_equal(-12345678, ::Metamarshal.parse("\x04\x08i\xFD\xB2\x9E\x43"))
     assert_equal(-1073741824, ::Metamarshal.parse("\x04\x08i\xFC\x00\x00\x00\xC0"))
+  end
+
+  def test_parse_array
+    a = Metamarshal::MetaArray.new(nil, 3)
+    a.data[0..2] = [1, 2, 3]
+    assert_syn_isomorphic a, ::Metamarshal.parse("\x04\x08[\x08i\x06i\x07i\x08")
   end
 
   def test_major_mismatch
