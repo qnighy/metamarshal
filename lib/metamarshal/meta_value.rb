@@ -32,9 +32,10 @@ module Metamarshal
     def kind_of?(klass)
       super || self.class >= klass
     end
+    alias is_a? kind_of?
 
-    def ===(obj)
-      kind_of?(obj)
+    def self.===(obj)
+      obj.kind_of?(self)
     end
 
     def inspect
