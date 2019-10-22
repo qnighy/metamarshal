@@ -56,12 +56,30 @@ class MetamarshalTest < Minitest::Test
   end
 
   def test_parse_link
-    assert_syn_isomorphic(
-      Metamarshal::MetaArray.new([]).tap { |a|
-        a.data << a
-      },
-      ::Metamarshal.parse("\x04\x08[\x06@\x00")
-    )
+    cycle1 = Metamarshal::MetaArray.new([]).tap { |a|
+      a.data << a
+    }
+    cycle2 = Metamarshal::MetaArray.new([]).tap { |a|
+      a.data << Metamarshal::MetaArray.new([a])
+    }
+    wrapped1_cycle1 = Metamarshal::MetaArray.new([cycle1])
+    wrapped1_cycle2 = Metamarshal::MetaArray.new([cycle2])
+    assert_syn_isomorphic cycle1, ::Metamarshal.parse("\x04\x08[\x06@\x00")
+    refute_syn_isomorphic cycle1, ::Metamarshal.parse("\x04\x08[\x06[\x06@\x00")
+    refute_syn_isomorphic cycle1, ::Metamarshal.parse("\x04\x08[\x06[\x06@\x06")
+    refute_syn_isomorphic cycle1, ::Metamarshal.parse("\x04\x08[\x06[\x06[\x06@\x06")
+    refute_syn_isomorphic cycle2, ::Metamarshal.parse("\x04\x08[\x06@\x00")
+    assert_syn_isomorphic cycle2, ::Metamarshal.parse("\x04\x08[\x06[\x06@\x00")
+    refute_syn_isomorphic cycle2, ::Metamarshal.parse("\x04\x08[\x06[\x06@\x06")
+    refute_syn_isomorphic cycle2, ::Metamarshal.parse("\x04\x08[\x06[\x06[\x06@\x06")
+    refute_syn_isomorphic wrapped1_cycle1, ::Metamarshal.parse("\x04\x08[\x06@\x00")
+    refute_syn_isomorphic wrapped1_cycle1, ::Metamarshal.parse("\x04\x08[\x06[\x06@\x00")
+    assert_syn_isomorphic wrapped1_cycle1, ::Metamarshal.parse("\x04\x08[\x06[\x06@\x06")
+    refute_syn_isomorphic wrapped1_cycle1, ::Metamarshal.parse("\x04\x08[\x06[\x06[\x06@\x06")
+    refute_syn_isomorphic wrapped1_cycle2, ::Metamarshal.parse("\x04\x08[\x06@\x00")
+    refute_syn_isomorphic wrapped1_cycle2, ::Metamarshal.parse("\x04\x08[\x06[\x06@\x00")
+    refute_syn_isomorphic wrapped1_cycle2, ::Metamarshal.parse("\x04\x08[\x06[\x06@\x06")
+    assert_syn_isomorphic wrapped1_cycle2, ::Metamarshal.parse("\x04\x08[\x06[\x06[\x06@\x06")
 
     non_shared = Metamarshal::MetaArray.new([
       Metamarshal::MetaArray.new([0]),
