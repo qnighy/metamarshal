@@ -26,7 +26,7 @@ module Metamarshal
       if minor != MINOR_VERSION
         warn "incompatible marshal file format (can be read)\n\tformat version #{MAJOR_VERSION}.#{MINOR_VERSION} required; #{major}.#{minor} given"
       end
-      nil
+      r_object
     end
 
     private
@@ -62,6 +62,44 @@ module Metamarshal
         else
           @src.getbyte
         end
+      end
+    end
+
+    def r_long
+      c = r_byte
+      c -= 256 if c >= 128
+      return 0 if c == 0
+      if c > 0
+        return c - 5 if 4 < c && c < 128
+        x = 0
+        c.times do |i|
+          x |= r_byte << (8*i)
+        end
+        x
+      else
+        return c + 5 if -129 < c && c < -4
+        c = -c
+        x = -1 << (8*c)
+        c.times do |i|
+          x |= r_byte << (8*i)
+        end
+        x
+      end
+    end
+
+    def r_object
+      type = r_byte
+      case type
+      when 0x30  # '0', TYPE_NIL
+        nil
+      when 0x54  # 'T', TYPE_TRUE
+        true
+      when 0x46  # 'F', TYPE_FALSE
+        false
+      when 0x69  # 'i', TYPE_FIXNUM
+        r_long
+      else
+        raise ArgumentError, "dump format error(0x%x)" % type
       end
     end
   end
