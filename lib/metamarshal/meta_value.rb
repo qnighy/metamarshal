@@ -84,15 +84,15 @@ module Metamarshal
 
   class MetaString < MetaReference
     MetaReference::CLASS_MAP[:string] = self
-    def self.new(klass)
-      MetaReference.new(:string, klass)
+    def self.new
+      MetaReference.new(:string, nil)
     end
   end
 
   class MetaArray < MetaReference
     MetaReference::CLASS_MAP[:array] = self
-    def self.new(klass, len)
-      MetaReference.new(:array, klass, Array.new(len))
+    def self.new(elements)
+      MetaReference.new(:array, nil, elements)
     end
   end
 

@@ -100,7 +100,7 @@ module Metamarshal
         r_long
       when 0x5B  # '[', TYPE_ARRAY
         len = r_long
-        v = MetaArray.new(nil, len)
+        v = MetaArray.new(Array.new(len))
         @readable += len - 1
         len.times do |i|
           v.data[i] = r_object

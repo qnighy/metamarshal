@@ -11,7 +11,7 @@ class MetaValueTest < Minitest::Test
     refute_kind_of Metamarshal::MetaValue, "foo"
     refute_kind_of Metamarshal::MetaValue, [1, 2, 3]
     assert_kind_of Metamarshal::MetaValue, Metamarshal::MetaObject.new(nil)
-    assert_kind_of Metamarshal::MetaValue, Metamarshal::MetaArray.new(nil, 10)
+    assert_kind_of Metamarshal::MetaValue, Metamarshal::MetaArray.new([])
   end
 
   def test_kind_of_meta_reference
@@ -24,14 +24,14 @@ class MetaValueTest < Minitest::Test
     refute_kind_of Metamarshal::MetaReference, "foo"
     refute_kind_of Metamarshal::MetaReference, [1, 2, 3]
     assert_kind_of Metamarshal::MetaReference, Metamarshal::MetaObject.new(nil)
-    assert_kind_of Metamarshal::MetaReference, Metamarshal::MetaArray.new(nil, 10)
+    assert_kind_of Metamarshal::MetaReference, Metamarshal::MetaArray.new([])
   end
 
   def test_kind_of_meta_subclasses
     assert_kind_of Metamarshal::MetaObject, Metamarshal::MetaObject.new(nil)
-    refute_kind_of Metamarshal::MetaObject, Metamarshal::MetaArray.new(nil, 10)
+    refute_kind_of Metamarshal::MetaObject, Metamarshal::MetaArray.new([])
     refute_kind_of Metamarshal::MetaArray, Metamarshal::MetaObject.new(nil)
-    assert_kind_of Metamarshal::MetaArray, Metamarshal::MetaArray.new(nil, 10)
+    assert_kind_of Metamarshal::MetaArray, Metamarshal::MetaArray.new([])
   end
 
   def test_assign_itself
@@ -40,7 +40,7 @@ class MetaValueTest < Minitest::Test
     refute_kind_of Metamarshal::MetaArray, obj
     assert_equal Metamarshal::MetaObject, obj.class
 
-    obj.itself = Metamarshal::MetaArray.new(nil, 10)
+    obj.itself = Metamarshal::MetaArray.new([])
     refute_kind_of Metamarshal::MetaObject, obj
     assert_kind_of Metamarshal::MetaArray, obj
     assert_equal Metamarshal::MetaArray, obj.class

@@ -52,9 +52,7 @@ class MetamarshalTest < Minitest::Test
   end
 
   def test_parse_array
-    a = Metamarshal::MetaArray.new(nil, 3)
-    a.data[0..2] = [1, 2, 3]
-    assert_syn_isomorphic a, ::Metamarshal.parse("\x04\x08[\x08i\x06i\x07i\x08")
+    assert_syn_isomorphic Metamarshal::MetaArray.new([1, 2, 3]), ::Metamarshal.parse("\x04\x08[\x08i\x06i\x07i\x08")
   end
 
   def test_major_mismatch
