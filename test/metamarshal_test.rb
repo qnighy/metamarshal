@@ -25,13 +25,13 @@ class MetamarshalTest < Minitest::Test
     assert_equal 120, ::Metamarshal.parse("\x04\x08i\x7D")
     assert_equal 121, ::Metamarshal.parse("\x04\x08i\x7E")
     assert_equal 122, ::Metamarshal.parse("\x04\x08i\x7F")
-    assert_equal -1, ::Metamarshal.parse("\x04\x08i\xFA")
-    assert_equal -2, ::Metamarshal.parse("\x04\x08i\xF9")
-    assert_equal -3, ::Metamarshal.parse("\x04\x08i\xF8")
-    assert_equal -120, ::Metamarshal.parse("\x04\x08i\x83")
-    assert_equal -121, ::Metamarshal.parse("\x04\x08i\x82")
-    assert_equal -122, ::Metamarshal.parse("\x04\x08i\x81")
-    assert_equal -123, ::Metamarshal.parse("\x04\x08i\x80")
+    assert_equal(-1, ::Metamarshal.parse("\x04\x08i\xFA"))
+    assert_equal(-2, ::Metamarshal.parse("\x04\x08i\xF9"))
+    assert_equal(-3, ::Metamarshal.parse("\x04\x08i\xF8"))
+    assert_equal(-120, ::Metamarshal.parse("\x04\x08i\x83"))
+    assert_equal(-121, ::Metamarshal.parse("\x04\x08i\x82"))
+    assert_equal(-122, ::Metamarshal.parse("\x04\x08i\x81"))
+    assert_equal(-123, ::Metamarshal.parse("\x04\x08i\x80"))
   end
 
   def test_parse_fixnum_long
@@ -41,12 +41,12 @@ class MetamarshalTest < Minitest::Test
     assert_equal 34567, ::Metamarshal.parse("\x04\x08i\x02\x07\x87")
     assert_equal 12345678, ::Metamarshal.parse("\x04\x08i\x03\x4E\x61\xBC")
     assert_equal 1073741823, ::Metamarshal.parse("\x04\x08i\x04\xFF\xFF\xFF\x3F")
-    assert_equal -124, ::Metamarshal.parse("\x04\x08i\xFF\x84")
-    assert_equal -234, ::Metamarshal.parse("\x04\x08i\xFF\x16")
-    assert_equal -1234, ::Metamarshal.parse("\x04\x08i\xFE\x2E\xFB")
-    assert_equal -34567, ::Metamarshal.parse("\x04\x08i\xFE\xF9\x78")
-    assert_equal -12345678, ::Metamarshal.parse("\x04\x08i\xFD\xB2\x9E\x43")
-    assert_equal -1073741824, ::Metamarshal.parse("\x04\x08i\xFC\x00\x00\x00\xC0")
+    assert_equal(-124, ::Metamarshal.parse("\x04\x08i\xFF\x84"))
+    assert_equal(-234, ::Metamarshal.parse("\x04\x08i\xFF\x16"))
+    assert_equal(-1234, ::Metamarshal.parse("\x04\x08i\xFE\x2E\xFB"))
+    assert_equal(-34567, ::Metamarshal.parse("\x04\x08i\xFE\xF9\x78"))
+    assert_equal(-12345678, ::Metamarshal.parse("\x04\x08i\xFD\xB2\x9E\x43"))
+    assert_equal(-1073741824, ::Metamarshal.parse("\x04\x08i\xFC\x00\x00\x00\xC0"))
   end
 
   def test_major_mismatch
