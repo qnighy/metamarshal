@@ -15,6 +15,7 @@ module Metamarshal
         raise TypeError, "instance of IO needed"
       end
       @readable = 0
+      @data = []
     end
 
     def parse
@@ -90,6 +91,10 @@ module Metamarshal
     def r_object
       type = r_byte
       case type
+      when 0x40  # '@', TYPE_LINK
+        id = r_long
+        raise ArgumentError, "dump format error (unlinked)" if id < 0 || id >= @data.size
+        @data[id]
       when 0x30  # '0', TYPE_NIL
         nil
       when 0x54  # 'T', TYPE_TRUE
@@ -101,6 +106,7 @@ module Metamarshal
       when 0x5B  # '[', TYPE_ARRAY
         len = r_long
         v = MetaArray.new(Array.new(len))
+        @data << v
         @readable += len - 1
         len.times do |i|
           v.data[i] = r_object

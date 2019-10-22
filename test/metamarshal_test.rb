@@ -55,6 +55,27 @@ class MetamarshalTest < Minitest::Test
     assert_syn_isomorphic Metamarshal::MetaArray.new([1, 2, 3]), ::Metamarshal.parse("\x04\x08[\x08i\x06i\x07i\x08")
   end
 
+  def test_parse_link
+    assert_syn_isomorphic(
+      Metamarshal::MetaArray.new([]).tap { |a|
+        a.data << a
+      },
+      ::Metamarshal.parse("\x04\x08[\x06@\x00")
+    )
+
+    non_shared = Metamarshal::MetaArray.new([
+      Metamarshal::MetaArray.new([0]),
+      Metamarshal::MetaArray.new([0])
+    ])
+    shared = Metamarshal::MetaArray.new([
+      Metamarshal::MetaArray.new([0])
+    ] * 2)
+    assert_syn_isomorphic non_shared, ::Metamarshal.parse("\x04\x08[\x07[\x06i\x00[\x06i\x00")
+    refute_syn_isomorphic non_shared, ::Metamarshal.parse("\x04\x08[\x07[\x06i\x00@\x06")
+    refute_syn_isomorphic shared, ::Metamarshal.parse("\x04\x08[\x07[\x06i\x00[\x06i\x00")
+    assert_syn_isomorphic shared, ::Metamarshal.parse("\x04\x08[\x07[\x06i\x00@\x06")
+  end
+
   def test_major_mismatch
     assert_raises(TypeError, "incompatible marshal file format (can't be read)\n\tformat version 4.8 required; 3.8 given") do
       ::Metamarshal.parse("\x03\x080")

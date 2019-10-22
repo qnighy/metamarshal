@@ -11,6 +11,13 @@ module SyntaxHelper
     assert(syn_isomorphic(exp, act), msg)
   end
 
+  def refute_syn_isomorphic(exp, act, msg = nil)
+    msg = message(msg) {
+      "Expected #{mu_pp(act)} to not be equal to #{mu_pp(exp)}"
+    }
+    refute(syn_isomorphic(exp, act), msg)
+  end
+
   def syn_isomorphic(a, b, map1 = {}, map2 = {})
     return map1[a.object_id] == b.object_id if map1.has_key? a.object_id
     return map2[b.object_id] == a.object_id if map2.has_key? b.object_id
