@@ -10,11 +10,11 @@ module Metamarshal
         @src = port
         @buf = "\0" * 1024
         @buf.force_encoding(Encoding::ASCII_8BIT)
-        @readable = 0
         @buflen = 0
       else
         raise TypeError, "instance of IO needed"
       end
+      @readable = 0
     end
 
     def parse
@@ -98,6 +98,16 @@ module Metamarshal
         false
       when 0x69  # 'i', TYPE_FIXNUM
         r_long
+      when 0x5B  # '[', TYPE_ARRAY
+        len = r_long
+        v = MetaArray.new(nil, len)
+        @readable += len - 1
+        len.times do |i|
+          v.data[i] = r_object
+          @readable -= 1
+        end
+        @readable += 1
+        v
       else
         raise ArgumentError, "dump format error(0x%x)" % type
       end
