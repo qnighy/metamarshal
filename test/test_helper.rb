@@ -23,7 +23,7 @@ module SyntaxHelper
     when Metamarshal::MetaArray
       Metamarshal::MetaArray === b && begin
         a.klass == b.klass && a.data.size == b.data.size && begin
-          a.data.zip(b.data).each do |(ai, bi)|
+          a.data.zip(b.data).all? do |(ai, bi)|
             syn_isomorphic(ai, bi, map1, map2)
           end
         end
