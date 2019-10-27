@@ -51,6 +51,11 @@ class MetamarshalTest < Minitest::Test
     assert_equal(-1073741824, ::Metamarshal.parse("\x04\x08i\xFC\x00\x00\x00\xC0"))
   end
 
+  def test_parse_symbol
+    assert_equal(:"", ::Metamarshal.parse("\x04\x08:\x00"))
+    assert_equal(:foo, ::Metamarshal.parse("\x04\x08:\x08foo"))
+  end
+
   def test_parse_array
     assert_syn_isomorphic Metamarshal::MetaArray.new([1, 2, 3]), ::Metamarshal.parse("\x04\x08[\x08i\x06i\x07i\x08")
   end

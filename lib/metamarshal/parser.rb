@@ -88,6 +88,22 @@ module Metamarshal
       end
     end
 
+    def r_bytes0(len)
+      if @offset
+        too_short unless @offset + len <= @src.size
+        s = @src[@offset, len]
+        @offset += len
+        s
+      else
+        raise NotImplementedError, "r_bytes0 for IO"
+      end
+    end
+
+    def r_bytes
+      # TODO: negative length
+      r_bytes0(r_long)
+    end
+
     def r_object
       type = r_byte
       case type
@@ -114,6 +130,9 @@ module Metamarshal
         end
         @readable += 1
         v
+      when 0x3A  # ':', TYPE_SYMBOL
+        # TODO: encoding
+        r_bytes.to_sym
       else
         raise ArgumentError, "dump format error(0x%x)" % type
       end
