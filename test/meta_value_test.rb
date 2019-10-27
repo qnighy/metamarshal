@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class MetaValueTest < Minitest::Test
   def test_kind_of_meta_value
@@ -8,7 +10,7 @@ class MetaValueTest < Minitest::Test
     assert_kind_of Metamarshal::MetaValue, true
     assert_kind_of Metamarshal::MetaValue, false
     assert_kind_of Metamarshal::MetaValue, nil
-    refute_kind_of Metamarshal::MetaValue, "foo"
+    refute_kind_of Metamarshal::MetaValue, 'foo'
     refute_kind_of Metamarshal::MetaValue, [1, 2, 3]
     assert_kind_of Metamarshal::MetaValue, Metamarshal::MetaObject.new(nil)
     assert_kind_of Metamarshal::MetaValue, Metamarshal::MetaArray.new([])
@@ -21,7 +23,7 @@ class MetaValueTest < Minitest::Test
     refute_kind_of Metamarshal::MetaReference, true
     refute_kind_of Metamarshal::MetaReference, false
     refute_kind_of Metamarshal::MetaReference, nil
-    refute_kind_of Metamarshal::MetaReference, "foo"
+    refute_kind_of Metamarshal::MetaReference, 'foo'
     refute_kind_of Metamarshal::MetaReference, [1, 2, 3]
     assert_kind_of Metamarshal::MetaReference, Metamarshal::MetaObject.new(nil)
     assert_kind_of Metamarshal::MetaReference, Metamarshal::MetaArray.new([])

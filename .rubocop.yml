@@ -2,3 +2,10 @@ require:
 - rubocop-minitest
 - rubocop-performance
 - rubocop-rake
+
+AllCops:
+  Exclude:
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - '.git/**/*'
+    - 'bin/*'

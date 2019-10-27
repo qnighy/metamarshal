@@ -1,11 +1,17 @@
-module Metamarshal
+# frozen_string_literal: true
+
+module Metamarshal # rubocop:disable Style/Documentation
+  # A value which can be used as a node in a Marshal syntax graph node.
   module MetaValue
   end
 
+  # A MetaValue that is distinguished by its address.
   class MetaReference
     include MetaValue
 
+    # rubocop:disable Style/MutableConstant
     CLASS_MAP = {}
+    # rubocop:enable Style/MutableConstant
 
     attr_reader :type, :klass, :data
 
@@ -35,7 +41,7 @@ module Metamarshal
     alias is_a? kind_of?
 
     def self.===(obj)
-      obj.kind_of?(self)
+      obj.is_a?(self)
     end
 
     def inspect
@@ -44,6 +50,13 @@ module Metamarshal
       end
     end
 
+    # rubocop:disable Layout/SpaceInsideBlockBraces
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # rubocop:disable Style/BlockDelimiters
+    # rubocop:disable Style/CaseEquality
+    # rubocop:disable Style/Lambda
     def pretty_print(q)
       str = Kernel.instance_method(:to_s).bind(self).call
       str.chomp!('>')
@@ -61,6 +74,13 @@ module Metamarshal
         }
       }
     end
+    # rubocop:enable Layout/SpaceInsideBlockBraces
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Naming/UncommunicativeMethodParamName
+    # rubocop:enable Style/BlockDelimiters
+    # rubocop:enable Style/CaseEquality
+    # rubocop:enable Style/Lambda
 
     def clone(*)
       super.tap do |v|
@@ -75,6 +95,7 @@ module Metamarshal
     end
   end
 
+  # A MetaReference denoting a plain object (marshal tag: +o+)
   class MetaObject < MetaReference
     MetaReference::CLASS_MAP[:object] = self
     def self.new(klass)
@@ -82,6 +103,7 @@ module Metamarshal
     end
   end
 
+  # A MetaReference denoting a string (marshal tag: +"+)
   class MetaString < MetaReference
     MetaReference::CLASS_MAP[:string] = self
     def self.new
@@ -89,6 +111,7 @@ module Metamarshal
     end
   end
 
+  # A MetaReference denoting an array (marshal tag: +[+)
   class MetaArray < MetaReference
     MetaReference::CLASS_MAP[:array] = self
     def self.new(elements)
@@ -99,21 +122,27 @@ module Metamarshal
   MetaReference::CLASS_MAP.freeze
 end
 
+# :nodoc:
 class Integer
   include Metamarshal::MetaValue
 end
+# :nodoc:
 class Float
   include Metamarshal::MetaValue
 end
+# :nodoc:
 class Symbol
   include Metamarshal::MetaValue
 end
+# :nodoc:
 class TrueClass
   include Metamarshal::MetaValue
 end
+# :nodoc:
 class FalseClass
   include Metamarshal::MetaValue
 end
+# :nodoc:
 class NilClass
   include Metamarshal::MetaValue
 end
