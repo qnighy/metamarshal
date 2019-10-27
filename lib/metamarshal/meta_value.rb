@@ -45,9 +45,16 @@ module Metamarshal # rubocop:disable Style/Documentation
     end
 
     def inspect
-      super.tap do |s|
-        s.sub!(/\A#<Metamarshal::MetaReference/, "\#<#{self.class}")
-      end
+      self.class.instance_inspect(self)
+    end
+
+    # :nodoc:
+    def self.instance_inspect(obj)
+      'Metamarshal::MetaReference.new(' \
+        "#{obj.type.inspect}, " \
+        "#{obj.klass.inspect}, " \
+        "#{obj.data.inspect}" \
+      ')'
     end
 
     # rubocop:disable Layout/SpaceInsideBlockBraces
@@ -101,6 +108,11 @@ module Metamarshal # rubocop:disable Style/Documentation
     def self.new(klass)
       MetaReference.new(:object, klass)
     end
+
+    # :nodoc:
+    def self.instance_inspect(obj)
+      "Metamarshal::MetaObject.new(#{obj.klass.inspect})"
+    end
   end
 
   # A MetaReference denoting a string (marshal tag: +"+)
@@ -109,6 +121,11 @@ module Metamarshal # rubocop:disable Style/Documentation
     def self.new
       MetaReference.new(:string, nil)
     end
+
+    # :nodoc:
+    def self.instance_inspect(_obj)
+      'Metamarshal::MetaString.new'
+    end
   end
 
   # A MetaReference denoting an array (marshal tag: +[+)
@@ -116,6 +133,11 @@ module Metamarshal # rubocop:disable Style/Documentation
     MetaReference::CLASS_MAP[:array] = self
     def self.new(elements)
       MetaReference.new(:array, nil, elements)
+    end
+
+    # :nodoc:
+    def self.instance_inspect(obj)
+      "Metamarshal::MetaArray.new(#{obj.data.inspect})"
     end
   end
 

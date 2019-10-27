@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/MethodLength
+
 require 'test_helper'
 
 class MetaValueTest < Minitest::Test
@@ -47,4 +49,21 @@ class MetaValueTest < Minitest::Test
     assert_kind_of Metamarshal::MetaArray, obj
     assert_equal Metamarshal::MetaArray, obj.class
   end
+
+  def test_inspect
+    assert_equal(
+      Metamarshal::MetaArray.new([1, 2, 3]).inspect,
+      'Metamarshal::MetaArray.new([1, 2, 3])'
+    )
+
+    cycle1 = Metamarshal::MetaArray.new([]).tap do |a|
+      a.data << a
+    end
+    assert_equal(
+      cycle1.inspect,
+      'Metamarshal::MetaArray.new([Metamarshal::MetaArray.new([...])])'
+    )
+  end
 end
+
+# rubocop:enable Metrics/MethodLength
