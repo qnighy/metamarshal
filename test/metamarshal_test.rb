@@ -56,6 +56,22 @@ class MetamarshalTest < Minitest::Test
     assert_equal(:foo, ::Metamarshal.parse("\x04\x08:\x08foo"))
   end
 
+  def test_parse_symlink
+    assert_syn_isomorphic(
+      Metamarshal::MetaArray.new([:foo, :bar, :bar, :foo]),
+      ::Metamarshal.parse("\x04\x08[\x09:\x08foo:\x08bar;\x06;\x00")
+    )
+  end
+
+  def test_parse_symlink_bad_index
+    assert_raises(ArgumentError, "bad symbol") do
+      ::Metamarshal.parse("\x04\x08;\x00")
+    end
+    assert_raises(ArgumentError, "bad symbol") do
+      ::Metamarshal.parse("\x04\x08[\x07;\x00:\x08foo")
+    end
+  end
+
   def test_parse_array
     assert_syn_isomorphic Metamarshal::MetaArray.new([1, 2, 3]), ::Metamarshal.parse("\x04\x08[\x08i\x06i\x07i\x08")
   end

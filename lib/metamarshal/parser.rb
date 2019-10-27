@@ -16,6 +16,7 @@ module Metamarshal
       end
       @readable = 0
       @data = []
+      @symbols = []
     end
 
     def parse
@@ -132,7 +133,13 @@ module Metamarshal
         v
       when 0x3A  # ':', TYPE_SYMBOL
         # TODO: encoding
-        r_bytes.to_sym
+        v = r_bytes.to_sym
+        @symbols << v
+        v
+      when 0x3B  # ';', TYPE_SYMLINK
+        num = r_long
+        raise ArgumentError, "bad symbol" unless 0 <= num && num < @symbols.size
+        @symbols[num]
       else
         raise ArgumentError, "dump format error(0x%x)" % type
       end
