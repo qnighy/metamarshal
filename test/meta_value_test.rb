@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/MethodLength
 
 require 'test_helper'
+require 'pp'
 
 class MetaValueTest < Minitest::Test
   def test_kind_of_meta_value
@@ -64,6 +66,27 @@ class MetaValueTest < Minitest::Test
       'Metamarshal::MetaArray.new([Metamarshal::MetaArray.new([...])])'
     )
   end
+
+  def test_pretty_print
+    assert_equal(
+      PP.pp(Metamarshal::MetaArray.new([1, 2, 3]), +'', 79),
+      "Metamarshal::MetaArray.new([1, 2, 3])\n"
+    )
+    assert_equal(
+      PP.pp(Metamarshal::MetaArray.new([1, 2, 3]), +'', 30),
+      "Metamarshal::MetaArray.new(\n" \
+      " [1, 2, 3])\n"
+    )
+
+    cycle1 = Metamarshal::MetaArray.new([]).tap do |a|
+      a.data << a
+    end
+    assert_equal(
+      PP.pp(cycle1, +'', 79),
+      "Metamarshal::MetaArray.new([Metamarshal::MetaArray.new(...)])\n"
+    )
+  end
 end
 
+# rubocop:enable Metrics/AbcSize
 # rubocop:enable Metrics/MethodLength

@@ -57,37 +57,38 @@ module Metamarshal # rubocop:disable Style/Documentation
       ')'
     end
 
-    # rubocop:disable Layout/SpaceInsideBlockBraces
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
     # rubocop:disable Naming/UncommunicativeMethodParamName
-    # rubocop:disable Style/BlockDelimiters
-    # rubocop:disable Style/CaseEquality
-    # rubocop:disable Style/Lambda
     def pretty_print(q)
-      str = Kernel.instance_method(:to_s).bind(self).call
-      str.chomp!('>')
-      str.sub!(/\A#<Metamarshal::MetaReference/, "\#<#{self.class}")
-      q.group(1, str, '>') {
-        q.seplist(pretty_print_instance_variables, lambda { q.text ',' }) {|v|
-          q.breakable
-          v = v.to_s if Symbol === v
-          q.text v
-          q.text '='
-          q.group(1) {
-            q.breakable ''
-            q.pp(instance_eval(v))
-          }
-        }
-      }
+      self.class.instance_pretty_print(self, q)
     end
-    # rubocop:enable Layout/SpaceInsideBlockBraces
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
     # rubocop:enable Naming/UncommunicativeMethodParamName
-    # rubocop:enable Style/BlockDelimiters
-    # rubocop:enable Style/CaseEquality
-    # rubocop:enable Style/Lambda
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    def pretty_print_cycle(q)
+      self.class.instance_pretty_print_cycle(self, q)
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # :nodoc:
+    def self.instance_pretty_print(obj, q)
+      q.group(1, 'Metamarshal::MetaReference.new(', ')') do
+        q.breakable('')
+        q.pp(obj.type)
+        q.comma_breakable
+        q.pp(obj.klass)
+        q.comma_breakable
+        q.pp(obj.data)
+      end
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # :nodoc:
+    def self.instance_pretty_print_cycle(_obj, q)
+      q.text 'Metamarshal::MetaReference.new(...)'
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
 
     def clone(*)
       super.tap do |v|
@@ -113,6 +114,23 @@ module Metamarshal # rubocop:disable Style/Documentation
     def self.instance_inspect(obj)
       "Metamarshal::MetaObject.new(#{obj.klass.inspect})"
     end
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # :nodoc:
+    def self.instance_pretty_print(obj, q)
+      q.group(1, 'Metamarshal::MetaObject.new(', ')') do
+        q.breakable('')
+        q.pp(obj.klass)
+      end
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # :nodoc:
+    def self.instance_pretty_print_cycle(_obj, q)
+      q.text 'Metamarshal::MetaObject.new(...)'
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
   end
 
   # A MetaReference denoting a string (marshal tag: +"+)
@@ -126,6 +144,20 @@ module Metamarshal # rubocop:disable Style/Documentation
     def self.instance_inspect(_obj)
       'Metamarshal::MetaString.new'
     end
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # :nodoc:
+    def self.instance_pretty_print(_obj, q)
+      q.text 'Metamarshal::MetaString.new'
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # :nodoc:
+    def self.instance_pretty_print_cycle(_obj, q)
+      q.text 'Metamarshal::MetaString.new(...)'
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
   end
 
   # A MetaReference denoting an array (marshal tag: +[+)
@@ -139,6 +171,23 @@ module Metamarshal # rubocop:disable Style/Documentation
     def self.instance_inspect(obj)
       "Metamarshal::MetaArray.new(#{obj.data.inspect})"
     end
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # :nodoc:
+    def self.instance_pretty_print(obj, q)
+      q.group(1, 'Metamarshal::MetaArray.new(', ')') do
+        q.breakable('')
+        q.pp(obj.data)
+      end
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
+
+    # rubocop:disable Naming/UncommunicativeMethodParamName
+    # :nodoc:
+    def self.instance_pretty_print_cycle(_obj, q)
+      q.text 'Metamarshal::MetaArray.new(...)'
+    end
+    # rubocop:enable Naming/UncommunicativeMethodParamName
   end
 
   MetaReference::CLASS_MAP.freeze
