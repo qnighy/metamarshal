@@ -63,7 +63,7 @@ class MetaValueTest < Minitest::Test
     end
     assert_equal(
       cycle1.inspect,
-      'Metamarshal::MetaArray.new([Metamarshal::MetaArray.new([...])])'
+      'Metamarshal::MetaArray.new([Metamarshal::MetaArray.new(...)])'
     )
   end
 

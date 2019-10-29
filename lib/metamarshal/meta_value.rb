@@ -45,7 +45,17 @@ module Metamarshal # rubocop:disable Style/Documentation
     end
 
     def inspect
-      self.class.instance_inspect(self)
+      inspect_tbl = (Thread.current[:__metamarshal_inspect_key__] ||= [])
+      if inspect_tbl.include?(object_id)
+        return self.class.instance_inspect_cycle(self)
+      end
+
+      begin
+        inspect_tbl << object_id
+        self.class.instance_inspect(self)
+      ensure
+        inspect_tbl.pop
+      end
     end
 
     # :nodoc:
@@ -55,6 +65,11 @@ module Metamarshal # rubocop:disable Style/Documentation
         "#{obj.klass.inspect}, " \
         "#{obj.data.inspect}" \
       ')'
+    end
+
+    # :nodoc:
+    def self.instance_inspect_cycle(_obj)
+      'Metamarshal::MetaReference.new(...)'
     end
 
     # rubocop:disable Naming/UncommunicativeMethodParamName
@@ -115,6 +130,11 @@ module Metamarshal # rubocop:disable Style/Documentation
       "Metamarshal::MetaObject.new(#{obj.klass.inspect})"
     end
 
+    # :nodoc:
+    def self.instance_inspect_cycle(_obj)
+      'Metamarshal::MetaObject.new(...)'
+    end
+
     # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print(obj, q)
@@ -145,6 +165,11 @@ module Metamarshal # rubocop:disable Style/Documentation
       'Metamarshal::MetaString.new'
     end
 
+    # :nodoc:
+    def self.instance_inspect_cycle(_obj)
+      'Metamarshal::MetaString.new(...)'
+    end
+
     # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print(_obj, q)
@@ -170,6 +195,11 @@ module Metamarshal # rubocop:disable Style/Documentation
     # :nodoc:
     def self.instance_inspect(obj)
       "Metamarshal::MetaArray.new(#{obj.data.inspect})"
+    end
+
+    # :nodoc:
+    def self.instance_inspect_cycle(_obj)
+      'Metamarshal::MetaArray.new(...)'
     end
 
     # rubocop:disable Naming/UncommunicativeMethodParamName
