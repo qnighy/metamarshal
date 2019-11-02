@@ -30,6 +30,8 @@ module Metamarshal
   # {.parse} can only parse the marshal data of this version or below.
   MINOR_VERSION = 8
 
+  private_constant :Parser, :Generator
+
   module_function
 
   # Parses a marshal data into a syntax graph.
@@ -37,7 +39,7 @@ module Metamarshal
   # @param source [String, IO, #read] from which the parser reads
   # @return [Metamarshal::MetaValue] a parsed syntax graph
   def parse(source)
-    parser = Metamarshal::Parser.new(source)
+    parser = Parser.new(source)
     parser.parse
   end
 
@@ -61,7 +63,7 @@ module Metamarshal
     end
     limit ||= -1
 
-    generator = Metamarshal::Generator.new(port)
+    generator = Generator.new(port)
     generator.generate(node, limit)
   end
 end

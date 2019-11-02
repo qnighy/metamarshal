@@ -62,6 +62,10 @@ module Metamarshal
       @data = data
     end
 
+    def initialize_copy(obj)
+      self.itself = obj
+    end
+
     # Updates itself in-place, copying from the other.
     #
     # @param other [Metamarshal::MetaReference] the other to copy from
@@ -110,7 +114,7 @@ module Metamarshal
       obj.is_a?(self)
     end
 
-    # Used in debug printing.
+    # Overrides {Object#inspect} for debug printing.
     #
     # @return [String] a debug description of this object
     def inspect
@@ -127,24 +131,18 @@ module Metamarshal
       end
     end
 
+    # Overrides {PPMixin#pretty_print} for debug pretty-printing.
+    #
+    # @param q [PP] the pretty-printer
     def pretty_print(q)
       self.class.send(:instance_pretty_print, self, q)
     end
 
+    # Overrides {PPMixin#pretty_print_cycle} for debug pretty-printing.
+    #
+    # @param q [PP] the pretty-printer
     def pretty_print_cycle(q)
       self.class.send(:instance_pretty_print_cycle, self, q)
-    end
-
-    def clone(*)
-      super.tap do |v|
-        v.instance_variable_set(:@data, v.instance_variable_get(:@data).dup)
-      end
-    end
-
-    def dup
-      super.tap do |v|
-        v.instance_variable_set(:@data, v.instance_variable_get(:@data).dup)
-      end
     end
 
     protected
@@ -189,11 +187,18 @@ module Metamarshal
   # A MetaReference denoting a plain object (marshal tag: +o+)
   class MetaObject < MetaReference
     MetaReference.const_get(:CLASS_MAP)[:object] = self
-    def self.new(klass)
-      MetaReference.new(:object, klass)
+
+    # @param klass [nil, Symbol] A class name of the object being represented
+    def initialize(klass)
+      # See define_method(:new) below for the actual implementation.
+      super(:object, klass)
     end
 
     class <<self
+      define_method(:new) do |klass|
+        MetaReference.new(:object, klass)
+      end
+
       private
 
       def instance_inspect(obj)
@@ -220,11 +225,17 @@ module Metamarshal
   # A MetaReference denoting a string (marshal tag: +"+)
   class MetaString < MetaReference
     MetaReference.const_get(:CLASS_MAP)[:string] = self
-    def self.new
-      MetaReference.new(:string, nil)
+
+    def initialize
+      # See define_method(:new) below for the actual implementation.
+      super(:string, nil)
     end
 
     class <<self
+      define_method(:new) do
+        MetaReference.new(:string, nil)
+      end
+
       private
 
       def instance_inspect(_obj)
@@ -248,11 +259,18 @@ module Metamarshal
   # A MetaReference denoting an array (marshal tag: +[+)
   class MetaArray < MetaReference
     MetaReference.const_get(:CLASS_MAP)[:array] = self
-    def self.new(elements)
-      MetaReference.new(:array, nil, elements)
+
+    # @param elements [Array<Metamarshal::MetaValue>] A list of elements.
+    def initialize(elements)
+      # See define_method(:new) below for the actual implementation.
+      super(:array, nil, elements)
     end
 
     class <<self
+      define_method(:new) do |elements|
+        MetaReference.new(:array, nil, elements)
+      end
+
       private
 
       def instance_inspect(obj)

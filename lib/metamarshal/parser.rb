@@ -5,9 +5,12 @@
 
 module Metamarshal
   # rubocop:disable Metrics/ClassLength
-  # @private
+
+  # An internal class to implement {Marshal.parse}.
   class Parser
     # rubocop:enable Metrics/ClassLength
+
+    # @param port [String, IO, #read]
     def initialize(port)
       if port.respond_to?(:to_str)
         @src = port.to_str
@@ -26,6 +29,7 @@ module Metamarshal
       @symbols = []
     end
 
+    # @return [Metamarshal::MetaValue]
     def parse
       major = r_byte
       minor = r_byte
@@ -49,10 +53,12 @@ module Metamarshal
 
     private
 
+    # @raise [ArgumentError]
     def too_short
       raise ArgumentError, 'marshal data too short'
     end
 
+    # @return [Integer]
     def r_byte1_buffered
       if @buflen == 0
         str = @src.read(1, @buf)
@@ -66,6 +72,7 @@ module Metamarshal
       c
     end
 
+    # @return [Integer]
     def r_byte
       if @offset
         too_short unless @offset < @src.size
@@ -81,6 +88,7 @@ module Metamarshal
       end
     end
 
+    # @return [Integer]
     def r_long
       c = r_byte
       c -= 256 if c >= 128
@@ -106,6 +114,8 @@ module Metamarshal
       end
     end
 
+    # @param len [Integer]
+    # @return [String]
     def r_bytes0(len)
       if @offset # rubocop:disable Style/GuardClause
         too_short unless @offset + len <= @src.size
@@ -117,11 +127,13 @@ module Metamarshal
       end
     end
 
+    # @return [String]
     def r_bytes
       # TODO: negative length
       r_bytes0(r_long)
     end
 
+    # @return [Metamarshal::MetaValue]
     def r_object
       type = r_byte
       case type
