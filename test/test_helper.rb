@@ -20,10 +20,6 @@ module SyntaxHelper
     refute(syn_isomorphic(exp, act), msg)
   end
 
-  # rubocop:disable Metrics/AbcSize
-  # rubocop:disable Metrics/CyclomaticComplexity
-  # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/PerceivedComplexity
   # rubocop:disable Naming/UncommunicativeMethodParamName
   def syn_isomorphic(a, b, map1 = {}, map2 = {})
     return map1[a.object_id] == b.object_id if map1.key? a.object_id
@@ -47,9 +43,5 @@ module SyntaxHelper
       raise ArgumentError, "Unknown MetaValue: #{a.inspect}"
     end
   end
-  # rubocop:enable Metrics/AbcSize
-  # rubocop:enable Metrics/CyclomaticComplexity
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/PerceivedComplexity
   # rubocop:enable Naming/UncommunicativeMethodParamName
 end

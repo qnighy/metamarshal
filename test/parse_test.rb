@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/AbcSize
-# rubocop:disable Metrics/ClassLength
-# rubocop:disable Metrics/MethodLength
-
 require 'test_helper'
 
+# rubocop:disable Metrics/ClassLength
 class ParseTest < Minitest::Test
+  # rubocop:enable Metrics/ClassLength
   include Metamarshal
   include SyntaxHelper
 
@@ -153,7 +151,3 @@ class ParseTest < Minitest::Test
     end
   end
 end
-
-# rubocop:enable Metrics/AbcSize
-# rubocop:enable Metrics/ClassLength
-# rubocop:enable Metrics/MethodLength

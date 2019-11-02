@@ -7,7 +7,6 @@ module Metamarshal
   # rubocop:disable Metrics/ClassLength
   # :nodoc:
   class Parser
-    # rubocop:disable Metrics/MethodLength
     def initialize(port)
       if port.respond_to?(:to_str)
         @src = port.to_str
@@ -25,9 +24,7 @@ module Metamarshal
       @data = []
       @symbols = []
     end
-    # rubocop:enable Metrics/MethodLength
 
-    # rubocop:disable Metrics/MethodLength
     def parse
       major = r_byte
       minor = r_byte
@@ -48,7 +45,6 @@ module Metamarshal
       end
       r_object
     end
-    # rubocop:enable Metrics/MethodLength
 
     private
 
@@ -69,7 +65,6 @@ module Metamarshal
       c
     end
 
-    # rubocop:disable Metrics/MethodLength
     def r_byte
       if @offset
         too_short unless @offset < @src.size
@@ -84,12 +79,7 @@ module Metamarshal
         end
       end
     end
-    # rubocop:enable Metrics/MethodLength
 
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/PerceivedComplexity
     def r_long
       c = r_byte
       c -= 256 if c >= 128
@@ -114,10 +104,6 @@ module Metamarshal
         x # rubocop:disable Style/IdenticalConditionalBranches
       end
     end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/PerceivedComplexity
 
     def r_bytes0(len)
       if @offset # rubocop:disable Style/GuardClause
@@ -135,9 +121,6 @@ module Metamarshal
       r_bytes0(r_long)
     end
 
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/MethodLength
     def r_object
       type = r_byte
       case type
@@ -181,9 +164,6 @@ module Metamarshal
         raise ArgumentError, format('dump format error(0x%<type>x)', type: type)
       end
     end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/MethodLength
   end
   # rubocop:enable Metrics/ClassLength
 end

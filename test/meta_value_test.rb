@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/AbcSize
-# rubocop:disable Metrics/MethodLength
-
 require 'test_helper'
 require 'pp'
 
@@ -87,6 +84,3 @@ class MetaValueTest < Minitest::Test
     )
   end
 end
-
-# rubocop:enable Metrics/AbcSize
-# rubocop:enable Metrics/MethodLength

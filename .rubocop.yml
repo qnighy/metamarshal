@@ -2,3 +2,15 @@ require:
 - rubocop-minitest
 - rubocop-performance
 - rubocop-rake
+
+Metrics/AbcSize:
+  Max: 60
+
+Metrics/CyclomaticComplexity:
+  Max: 15
+
+Metrics/MethodLength:
+  Max: 40
+
+Metrics/PerceivedComplexity:
+  Max: 10
