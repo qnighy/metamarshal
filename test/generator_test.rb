@@ -35,7 +35,7 @@ class GeneratorTest < Minitest::Test
     assert_equal "\x04\x08i\x80".b, generate(-123)
   end
 
-  def test_parse_fixnum_long
+  def test_fixnum_long
     assert_equal "\x04\x08i\x01\x7B".b, generate(123)
     assert_equal "\x04\x08i\x01\xEA".b, generate(234)
     assert_equal "\x04\x08i\x02\xD2\x04".b, generate(1_234)
@@ -48,5 +48,12 @@ class GeneratorTest < Minitest::Test
     assert_equal "\x04\x08i\xFE\xF9\x78".b, generate(-34_567)
     assert_equal "\x04\x08i\xFD\xB2\x9E\x43".b, generate(-12_345_678)
     assert_equal "\x04\x08i\xFC\x00\x00\x00\xC0".b, generate(-1_073_741_824)
+  end
+
+  def test_array
+    assert_equal(
+      "\x04\x08[\x08i\x06i\x07i\x08".b,
+      generate(MetaArray.new([1, 2, 3]))
+    )
   end
 end

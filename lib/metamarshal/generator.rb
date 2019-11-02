@@ -79,6 +79,12 @@ module Metamarshal
         else
           raise 'TODO: bigint'
         end
+      elsif node.is_a?(Metamarshal::MetaArray)
+        w_byte 0x5B # '[', TYPE_ARRAY
+        w_long node.data.size
+        node.data.each do |element|
+          w_object(element, limit - 1)
+        end
       else
         raise "TODO: #{node.class}"
       end
