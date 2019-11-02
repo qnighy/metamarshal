@@ -85,7 +85,7 @@ module Metamarshal
     # Overrides {Object#instance_of?} to allow changing types in-place.
     #
     # @param klass [Module] a class or a module
-    # @return [true, false]
+    # @return [Boolean]
     def instance_of?(klass)
       self.class == klass
     end
@@ -93,7 +93,7 @@ module Metamarshal
     # Overrides {Object#kind_of?} to allow changing types in-place.
     #
     # @param klass [Module] a class or a module
-    # @return [true, false]
+    # @return [Boolean]
     def kind_of?(klass)
       super || self.class >= klass
     end
@@ -101,7 +101,7 @@ module Metamarshal
     # Overrides {Object#is_a?} to allow changing types in-place.
     #
     # @param klass [Module] a class or a module
-    # @return [true, false]
+    # @return [Boolean]
     def is_a?(klass)
       super || self.class >= klass
     end
@@ -109,7 +109,7 @@ module Metamarshal
     # Overrides {Module#===} to allow changing types in-place.
     #
     # @param obj [Object] an object to check membership of
-    # @return [true, false]
+    # @return [Boolean]
     def self.===(obj)
       obj.is_a?(self)
     end
