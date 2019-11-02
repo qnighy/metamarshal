@@ -10,8 +10,7 @@ module Metamarshal
     # rubocop:disable Metrics/MethodLength
     def initialize(port)
       if port.respond_to?(:to_str)
-        @src = +port.to_str
-        @src.force_encoding(Encoding::ASCII_8BIT)
+        @src = port.to_str
         @offset = 0
       elsif port.respond_to?(:getbyte) && port.respond_to?(:read)
         port.try(:binmode, 0, 0)
@@ -123,7 +122,7 @@ module Metamarshal
     def r_bytes0(len)
       if @offset # rubocop:disable Style/GuardClause
         too_short unless @offset + len <= @src.size
-        s = @src[@offset, len]
+        s = @src.byteslice(@offset, len)
         @offset += len
         s
       else
