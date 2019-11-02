@@ -56,4 +56,24 @@ class GeneratorTest < Minitest::Test
       generate(MetaArray.new([1, 2, 3]))
     )
   end
+
+  def test_link
+    cycle1 = MetaArray.new([]).tap do |a|
+      a.data << a
+    end
+    cycle2 = MetaArray.new([]).tap do |a|
+      a.data << MetaArray.new([a])
+    end
+    wrapped1_cycle1 = MetaArray.new([cycle1])
+    wrapped1_cycle2 = MetaArray.new([cycle2])
+    assert_equal "\x04\x08[\x06@\x00".b, generate(cycle1)
+    assert_equal "\x04\x08[\x06[\x06@\x00".b, generate(cycle2)
+    assert_equal "\x04\x08[\x06[\x06@\x06".b, generate(wrapped1_cycle1)
+    assert_equal "\x04\x08[\x06[\x06[\x06@\x06".b, generate(wrapped1_cycle2)
+
+    non_shared = MetaArray.new([MetaArray.new([0]), MetaArray.new([0])])
+    shared = MetaArray.new([MetaArray.new([0])] * 2)
+    assert_equal "\x04\x08[\x07[\x06i\x00[\x06i\x00".b, generate(non_shared)
+    assert_equal "\x04\x08[\x07[\x06i\x00@\x06".b, generate(shared)
+  end
 end

@@ -62,8 +62,11 @@ module Metamarshal
     # @return [void]
     def w_object(node, limit)
       raise ArgumentError, 'exceed depth limit' if limit == 0
-      if @data.key?(node.object_id) # rubocop:disable Style/IfUnlessModifier
-        raise 'TODO'
+
+      if @data.key?(node.object_id)
+        w_byte 0x40 # '@', TYPE_LINK
+        w_long @data[node.object_id]
+        return
       end
 
       if node.nil?
@@ -80,6 +83,7 @@ module Metamarshal
           raise 'TODO: bigint'
         end
       elsif node.is_a?(Metamarshal::MetaArray)
+        @data[node.object_id] = @data.size
         w_byte 0x5B # '[', TYPE_ARRAY
         w_long node.data.size
         node.data.each do |element|
