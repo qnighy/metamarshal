@@ -45,3 +45,11 @@ module SyntaxHelper
     end
   end
 end
+
+module ParserRoundTripHelper
+  include Minitest::Assertions
+
+  def assert_round_trip(bytes, msg = nil)
+    assert_equal(bytes, Metamarshal.generate(Metamarshal.parse(bytes)), msg)
+  end
+end
