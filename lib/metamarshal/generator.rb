@@ -15,7 +15,7 @@ module Metamarshal
       w_byte MAJOR_VERSION
       w_byte MINOR_VERSION
       w_object(node, limit)
-      if @dest # rubocop:disable Style/UnneededCondition
+      if @dest # rubocop:disable Style/RedundantCondition
         @dest
       else
         @buf
@@ -24,7 +24,7 @@ module Metamarshal
 
     private
 
-    def w_byte(c) # rubocop:disable Style/UncommunicativeMethodParamName
+    def w_byte(c) # rubocop:disable Naming/UncommunicativeMethodParamName
       if @dest # rubocop:disable Style/GuardClause
         raise 'TODO'
       else
