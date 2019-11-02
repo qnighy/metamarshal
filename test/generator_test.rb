@@ -17,4 +17,36 @@ class GeneratorTest < Minitest::Test
   def test_false
     assert_equal "\x04\x08F".b, generate(false)
   end
+
+  def test_fixnum_short
+    assert_equal "\x04\x08i\x00".b, generate(0)
+    assert_equal "\x04\x08i\x06".b, generate(1)
+    assert_equal "\x04\x08i\x07".b, generate(2)
+    assert_equal "\x04\x08i\x08".b, generate(3)
+    assert_equal "\x04\x08i\x7D".b, generate(120)
+    assert_equal "\x04\x08i\x7E".b, generate(121)
+    assert_equal "\x04\x08i\x7F".b, generate(122)
+    assert_equal "\x04\x08i\xFA".b, generate(-1)
+    assert_equal "\x04\x08i\xF9".b, generate(-2)
+    assert_equal "\x04\x08i\xF8".b, generate(-3)
+    assert_equal "\x04\x08i\x83".b, generate(-120)
+    assert_equal "\x04\x08i\x82".b, generate(-121)
+    assert_equal "\x04\x08i\x81".b, generate(-122)
+    assert_equal "\x04\x08i\x80".b, generate(-123)
+  end
+
+  def test_parse_fixnum_long
+    assert_equal "\x04\x08i\x01\x7B".b, generate(123)
+    assert_equal "\x04\x08i\x01\xEA".b, generate(234)
+    assert_equal "\x04\x08i\x02\xD2\x04".b, generate(1_234)
+    assert_equal "\x04\x08i\x02\x07\x87".b, generate(34_567)
+    assert_equal "\x04\x08i\x03\x4E\x61\xBC".b, generate(12_345_678)
+    assert_equal "\x04\x08i\x04\xFF\xFF\xFF\x3F".b, generate(1_073_741_823)
+    assert_equal "\x04\x08i\xFF\x84".b, generate(-124)
+    assert_equal "\x04\x08i\xFF\x16".b, generate(-234)
+    assert_equal "\x04\x08i\xFE\x2E\xFB".b, generate(-1_234)
+    assert_equal "\x04\x08i\xFE\xF9\x78".b, generate(-34_567)
+    assert_equal "\x04\x08i\xFD\xB2\x9E\x43".b, generate(-12_345_678)
+    assert_equal "\x04\x08i\xFC\x00\x00\x00\xC0".b, generate(-1_073_741_824)
+  end
 end

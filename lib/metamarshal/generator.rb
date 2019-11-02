@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Style/NumericPredicate
+# rubocop:disable Style/YodaCondition
 
 module Metamarshal
   # An internal class to implement {Marshal.generate}.
@@ -38,6 +39,24 @@ module Metamarshal
       end
     end
 
+    # @param x [Integer]
+    # @return [void]
+    def w_long(x) # rubocop:disable Naming/UncommunicativeMethodParamName
+      unless -0x100000000 <= x && x < 0x100000000
+        raise TypeError, 'long too big to dump'
+      end
+
+      return w_byte(0) if x == 0
+      return w_byte(x + 5) if 0 < x && x < 123
+      return w_byte((x - 5) & 0xFF) if -124 < x && x < 0
+
+      c = (x.bit_length + 7) / 8
+      w_byte(x > 0 ? c : 0x100 - c)
+      c.times do |i|
+        w_byte((x >> (8 * i)) & 0xFF)
+      end
+    end
+
     # @param node [Metamarshal::MetaValue]
     # @param limit [Integer]
     # @return [void]
@@ -53,6 +72,13 @@ module Metamarshal
         w_byte 0x54 # 'T', TYPE_TRUE
       elsif node == false
         w_byte 0x46 # 'F', TYPE_FALSE
+      elsif node.is_a?(Integer)
+        if -0x40000000 <= node && node < 0x40000000 # rubocop:disable Style/GuardClause
+          w_byte 0x69 # 'i', TYPE_FIXNUM
+          w_long node
+        else
+          raise 'TODO: bigint'
+        end
       else
         raise "TODO: #{node.class}"
       end
@@ -61,3 +87,4 @@ module Metamarshal
 end
 
 # rubocop:enable Style/NumericPredicate
+# rubocop:enable Style/YodaCondition
