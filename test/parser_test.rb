@@ -3,7 +3,7 @@
 require 'test_helper'
 
 # rubocop:disable Metrics/ClassLength
-class ParseTest < Minitest::Test
+class ParserTest < Minitest::Test
   # rubocop:enable Metrics/ClassLength
   include Metamarshal
   include SyntaxHelper
