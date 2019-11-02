@@ -10,6 +10,7 @@ module Metamarshal
     def initialize(port)
       @dest = port
       @data = {}
+      @symbols = {}
       @buf = +''.b
     end
 
@@ -29,14 +30,27 @@ module Metamarshal
 
     private
 
-    # @param c [Integer] a byte to write
+    # @param s [String]
     # @return [void]
-    def w_byte(c) # rubocop:disable Naming/UncommunicativeMethodParamName
+    def w_nbyte(s) # rubocop:disable Naming/UncommunicativeMethodParamName
       if @dest # rubocop:disable Style/GuardClause
         raise 'TODO'
       else
-        @buf << c.chr
+        @buf << s
       end
+    end
+
+    # @param c [Integer] a byte to write
+    # @return [void]
+    def w_byte(c) # rubocop:disable Naming/UncommunicativeMethodParamName
+      w_nbyte c.chr
+    end
+
+    # @param s [String]
+    # @return [void]
+    def w_bytes(s) # rubocop:disable Naming/UncommunicativeMethodParamName
+      w_long s.bytesize
+      w_nbyte s
     end
 
     # @param x [Integer]
@@ -57,10 +71,13 @@ module Metamarshal
       end
     end
 
+    # rubocop:disable Metrics/MethodLength
+
     # @param node [Metamarshal::MetaValue]
     # @param limit [Integer]
     # @return [void]
     def w_object(node, limit)
+      # rubocop:enable Metrics/MethodLength
       raise ArgumentError, 'exceed depth limit' if limit == 0
 
       if @data.key?(node.object_id)
@@ -81,6 +98,20 @@ module Metamarshal
           w_long node
         else
           raise 'TODO: bigint'
+        end
+      elsif node.is_a?(Symbol)
+        if @symbols.key?(node)
+          w_byte 0x3B # ';', TYPE_SYMLINK
+          w_long @symbols[node]
+        else
+          @symbols[node] = @symbols.size
+          str = node.to_s
+          unless str.encoding.ascii_compatible? && str.ascii_only?
+            raise 'TODO: encoding'
+          end
+
+          w_byte 0x3A # ':', TYPE_SYMBOL
+          w_bytes str
         end
       elsif node.is_a?(Metamarshal::MetaArray)
         @data[node.object_id] = @data.size

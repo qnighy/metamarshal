@@ -58,7 +58,17 @@ class ParserRoundTripTest < Minitest::Test
     end
   end
 
-  def test_parse_array
+  def test_symbol
+    assert_round_trip "\x04\x08:\x00".b
+    assert_round_trip "\x04\x08:\x06f".b
+    assert_round_trip "\x04\x08:\x08foo".b
+  end
+
+  def test_symlink
+    assert_round_trip "\x04\x08[\x09:\x08foo:\x08bar;\x06;\x00".b
+  end
+
+  def test_array
     assert_round_trip "\x04\x08[\x00"
     assert_round_trip "\x04\x08[\x06i\x06"
     assert_round_trip "\x04\x08[\x07i\x06i\x07"

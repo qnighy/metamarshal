@@ -50,6 +50,18 @@ class GeneratorTest < Minitest::Test
     assert_equal "\x04\x08i\xFC\x00\x00\x00\xC0".b, generate(-1_073_741_824)
   end
 
+  def test_symbol
+    assert_equal("\x04\x08:\x00".b, generate(:""))
+    assert_equal("\x04\x08:\x08foo".b, generate(:foo))
+  end
+
+  def test_symlink
+    assert_equal(
+      "\x04\x08[\x09:\x08foo:\x08bar;\x06;\x00".b,
+      generate(MetaArray.new(%i[foo bar bar foo]))
+    )
+  end
+
   def test_array
     assert_equal(
       "\x04\x08[\x08i\x06i\x07i\x08".b,

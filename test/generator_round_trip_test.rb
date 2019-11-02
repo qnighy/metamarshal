@@ -36,7 +36,16 @@ class GeneratorRoundTripTest < Minitest::Test
     end
   end
 
-  def test_parse_array
+  def test_symbol
+    assert_round_trip :""
+    assert_round_trip :foo
+  end
+
+  def test_symlink
+    assert_round_trip MetaArray.new(%i[foo bar bar foo])
+  end
+
+  def test_array
     assert_round_trip MetaArray.new([])
     assert_round_trip MetaArray.new([1])
     assert_round_trip MetaArray.new([1, 2])
