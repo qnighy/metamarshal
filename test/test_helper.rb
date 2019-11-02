@@ -53,3 +53,16 @@ module ParserRoundTripHelper
     assert_equal(bytes, Metamarshal.generate(Metamarshal.parse(bytes)), msg)
   end
 end
+
+module GeneratorRoundTripHelper
+  include Minitest::Assertions
+  include SyntaxHelper
+
+  def assert_round_trip(node, msg = nil)
+    assert_syn_isomorphic(
+      node,
+      Metamarshal.parse(Metamarshal.generate(node)),
+      msg
+    )
+  end
+end
