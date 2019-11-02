@@ -8,19 +8,19 @@ class ParserTest < Minitest::Test
   include Metamarshal
   include SyntaxHelper
 
-  def test_parse_nil
+  def test_nil
     assert_nil parse("\x04\x080")
   end
 
-  def test_parse_true
+  def test_true
     assert_equal true, parse("\x04\x08T") # rubocop:disable Minitest/AssertTruthy
   end
 
-  def test_parse_false
+  def test_false
     assert_equal false, parse("\x04\x08F") # rubocop:disable Minitest/RefuteFalse
   end
 
-  def test_parse_fixnum_short
+  def test_fixnum_short
     assert_equal 0, parse("\x04\x08i\x00")
     assert_equal 1, parse("\x04\x08i\x06")
     assert_equal 2, parse("\x04\x08i\x07")
@@ -37,7 +37,7 @@ class ParserTest < Minitest::Test
     assert_equal(-123, parse("\x04\x08i\x80"))
   end
 
-  def test_parse_fixnum_long
+  def test_fixnum_long
     assert_equal 123, parse("\x04\x08i\x01\x7B")
     assert_equal 234, parse("\x04\x08i\x01\xEA")
     assert_equal 1_234, parse("\x04\x08i\x02\xD2\x04")
@@ -52,19 +52,19 @@ class ParserTest < Minitest::Test
     assert_equal(-1_073_741_824, parse("\x04\x08i\xFC\x00\x00\x00\xC0"))
   end
 
-  def test_parse_symbol
+  def test_symbol
     assert_equal(:"", parse("\x04\x08:\x00"))
     assert_equal(:foo, parse("\x04\x08:\x08foo"))
   end
 
-  def test_parse_symlink
+  def test_symlink
     assert_syn_isomorphic(
       MetaArray.new(%i[foo bar bar foo]),
       parse("\x04\x08[\x09:\x08foo:\x08bar;\x06;\x00")
     )
   end
 
-  def test_parse_symlink_bad_index
+  def test_symlink_bad_index
     assert_raises(ArgumentError, 'bad symbol') do
       parse("\x04\x08;\x00")
     end
@@ -73,14 +73,14 @@ class ParserTest < Minitest::Test
     end
   end
 
-  def test_parse_array
+  def test_array
     assert_syn_isomorphic(
       MetaArray.new([1, 2, 3]),
       parse("\x04\x08[\x08i\x06i\x07i\x08")
     )
   end
 
-  def test_parse_link
+  def test_link
     cycle1 = MetaArray.new([]).tap do |a|
       a.data << a
     end
