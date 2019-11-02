@@ -47,8 +47,12 @@ module Metamarshal
         raise 'TODO'
       end
 
-      if node.nil? # rubocop:disable Style/GuardClause
+      if node.nil?
         w_byte 0x30 # '0', TYPE_NIL
+      elsif node == true
+        w_byte 0x54 # 'T', TYPE_TRUE
+      elsif node == false
+        w_byte 0x46 # 'F', TYPE_FALSE
       else
         raise "TODO: #{node.class}"
       end
