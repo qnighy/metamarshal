@@ -5,7 +5,7 @@
 
 module Metamarshal
   # rubocop:disable Metrics/ClassLength
-  # :nodoc:
+  # @private
   class Parser
     # rubocop:enable Metrics/ClassLength
     def initialize(port)

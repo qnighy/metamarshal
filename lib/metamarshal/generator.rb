@@ -3,7 +3,6 @@
 # rubocop:disable Style/NumericPredicate
 
 module Metamarshal
-  # :nodoc:
   class Generator
     def initialize(port)
       @dest = port
