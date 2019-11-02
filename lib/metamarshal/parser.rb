@@ -7,6 +7,7 @@ module Metamarshal
   # rubocop:disable Metrics/ClassLength
   # :nodoc:
   class Parser
+    # rubocop:enable Metrics/ClassLength
     def initialize(port)
       if port.respond_to?(:to_str)
         @src = port.to_str
@@ -165,7 +166,6 @@ module Metamarshal
       end
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end
 
 # rubocop:enable Style/NumericPredicate

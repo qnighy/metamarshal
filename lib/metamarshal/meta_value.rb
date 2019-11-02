@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-module Metamarshal # rubocop:disable Style/Documentation
+# rubocop:disable Naming/UncommunicativeMethodParamName
+
+# :nodoc:
+module Metamarshal
   # A value which can be used as a node in a Marshal syntax graph node.
   module MetaValue
   end
@@ -9,9 +12,7 @@ module Metamarshal # rubocop:disable Style/Documentation
   class MetaReference
     include MetaValue
 
-    # rubocop:disable Style/MutableConstant
-    CLASS_MAP = {}
-    # rubocop:enable Style/MutableConstant
+    CLASS_MAP = {} # rubocop:disable Style/MutableConstant
 
     attr_reader :type, :klass, :data
 
@@ -72,19 +73,14 @@ module Metamarshal # rubocop:disable Style/Documentation
       'Metamarshal::MetaReference.new(...)'
     end
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     def pretty_print(q)
       self.class.instance_pretty_print(self, q)
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     def pretty_print_cycle(q)
       self.class.instance_pretty_print_cycle(self, q)
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print(obj, q)
       q.group(1, 'Metamarshal::MetaReference.new(', ')') do
@@ -96,14 +92,11 @@ module Metamarshal # rubocop:disable Style/Documentation
         q.pp(obj.data)
       end
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print_cycle(_obj, q)
       q.text 'Metamarshal::MetaReference.new(...)'
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
 
     def clone(*)
       super.tap do |v|
@@ -135,7 +128,6 @@ module Metamarshal # rubocop:disable Style/Documentation
       'Metamarshal::MetaObject.new(...)'
     end
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print(obj, q)
       q.group(1, 'Metamarshal::MetaObject.new(', ')') do
@@ -143,14 +135,11 @@ module Metamarshal # rubocop:disable Style/Documentation
         q.pp(obj.klass)
       end
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print_cycle(_obj, q)
       q.text 'Metamarshal::MetaObject.new(...)'
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
   end
 
   # A MetaReference denoting a string (marshal tag: +"+)
@@ -170,19 +159,15 @@ module Metamarshal # rubocop:disable Style/Documentation
       'Metamarshal::MetaString.new(...)'
     end
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print(_obj, q)
       q.text 'Metamarshal::MetaString.new'
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print_cycle(_obj, q)
       q.text 'Metamarshal::MetaString.new(...)'
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
   end
 
   # A MetaReference denoting an array (marshal tag: +[+)
@@ -202,7 +187,6 @@ module Metamarshal # rubocop:disable Style/Documentation
       'Metamarshal::MetaArray.new(...)'
     end
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print(obj, q)
       q.group(1, 'Metamarshal::MetaArray.new(', ')') do
@@ -210,14 +194,11 @@ module Metamarshal # rubocop:disable Style/Documentation
         q.pp(obj.data)
       end
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
 
-    # rubocop:disable Naming/UncommunicativeMethodParamName
     # :nodoc:
     def self.instance_pretty_print_cycle(_obj, q)
       q.text 'Metamarshal::MetaArray.new(...)'
     end
-    # rubocop:enable Naming/UncommunicativeMethodParamName
   end
 
   MetaReference::CLASS_MAP.freeze
@@ -247,3 +228,5 @@ end
 class NilClass
   include Metamarshal::MetaValue
 end
+
+# rubocop:enable Naming/UncommunicativeMethodParamName

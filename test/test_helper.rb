@@ -22,6 +22,7 @@ module SyntaxHelper
 
   # rubocop:disable Naming/UncommunicativeMethodParamName
   def syn_isomorphic(a, b, map1 = {}, map2 = {})
+    # rubocop:enable Naming/UncommunicativeMethodParamName
     return map1[a.object_id] == b.object_id if map1.key? a.object_id
     return map2[b.object_id] == a.object_id if map2.key? b.object_id
 
@@ -43,5 +44,4 @@ module SyntaxHelper
       raise ArgumentError, "Unknown MetaValue: #{a.inspect}"
     end
   end
-  # rubocop:enable Naming/UncommunicativeMethodParamName
 end
