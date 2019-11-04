@@ -2,7 +2,9 @@
 
 require 'test_helper'
 
+# rubocop:disable Metrics/ClassLength
 class GeneratorTest < Minitest::Test
+  # rubocop:enable Metrics/ClassLength
   include Metamarshal
   include SyntaxHelper
 
@@ -59,6 +61,39 @@ class GeneratorTest < Minitest::Test
     assert_equal(
       "\x04\x08[\x09:\x08foo:\x08bar;\x06;\x00".b,
       generate(MetaArray.new(%i[foo bar bar foo]))
+    )
+  end
+
+  def test_object
+    assert_equal(
+      "\x04\x08o:\x0ARange\x08:\texclF:\x0Abegini\x06:\x08endi\x07".b,
+      generate(
+        MetaObject.new(
+          :Range,
+          {
+            excl: false,
+            begin: 1,
+            end: 2
+          }
+        )
+      )
+    )
+
+    assert_equal(
+      "\x04\x08o:\x0BMatrix\x07" \
+      ":\x0A@rows[\x07[\x07i\x06i\x07[\x07i\x08i\x09" \
+      ":\x12@column_counti\x07".b,
+      generate(
+        MetaObject.new(
+          :Matrix,
+          {
+            "@rows": MetaArray.new(
+              [MetaArray.new([1, 2]), MetaArray.new([3, 4])]
+            ),
+            "@column_count": 2
+          }
+        )
+      )
     )
   end
 

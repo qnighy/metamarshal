@@ -68,6 +68,18 @@ class ParserRoundTripTest < Minitest::Test
     assert_round_trip "\x04\x08[\x09:\x08foo:\x08bar;\x06;\x00".b
   end
 
+  def test_object
+    assert_round_trip(
+      "\x04\x08o:\x0ARange\x08:\texclF:\x0Abegini\x06:\x08endi\x07".b
+    )
+
+    assert_round_trip(
+      "\x04\x08o:\x0BMatrix\x07" \
+      ":\x0A@rows[\x07[\x07i\x06i\x07[\x07i\x08i\x09" \
+      ":\x12@column_counti\x07".b
+    )
+  end
+
   def test_array
     assert_round_trip "\x04\x08[\x00"
     assert_round_trip "\x04\x08[\x06i\x06"

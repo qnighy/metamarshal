@@ -4,8 +4,12 @@
 # rubocop:disable Style/YodaCondition
 
 module Metamarshal
+  # rubocop:disable Metrics/ClassLength
+
   # An internal class to implement {Marshal.generate}.
   class Generator
+    # rubocop:enable Metrics/ClassLength
+
     # @param port [nil, IO, #write]
     def initialize(port)
       @dest = port
@@ -71,14 +75,49 @@ module Metamarshal
       end
     end
 
-    # rubocop:disable Metrics/MethodLength
+    # @param sym [Symbol]
+    # @return [void]
+    def w_symbol(sym)
+      if @symbols.key?(sym)
+        w_byte 0x3B # ';', TYPE_SYMLINK
+        w_long @symbols[sym]
+      else
+        @symbols[sym] = @symbols.size
+        str = sym.to_s
+        unless str.encoding.ascii_compatible? && str.ascii_only?
+          raise 'TODO: encoding'
+        end
+
+        w_byte 0x3A # ':', TYPE_SYMBOL
+        w_bytes str
+      end
+    end
+
+    # @param sym [Symbol]
+    # @return [void]
+    def w_unique(sym)
+      # TODO: check must_not_be_anonymous
+      w_symbol(sym)
+    end
+
+    # @param obj [Metamarshal::MetaReference]
+    # @param limit [Integer]
+    # @return [void]
+    def w_objivar(obj, limit)
+      w_long obj.ivars.size
+      obj.ivars.each do |key, value|
+        w_symbol key
+        w_object value, limit
+      end
+    end
 
     # @param node [Metamarshal::MetaValue]
     # @param limit [Integer]
     # @return [void]
     def w_object(node, limit)
-      # rubocop:enable Metrics/MethodLength
       raise ArgumentError, 'exceed depth limit' if limit == 0
+
+      limit -= 1 if limit > 0
 
       if @data.key?(node.object_id)
         w_byte 0x40 # '@', TYPE_LINK
@@ -100,25 +139,20 @@ module Metamarshal
           raise 'TODO: bigint'
         end
       elsif node.is_a?(Symbol)
-        if @symbols.key?(node)
-          w_byte 0x3B # ';', TYPE_SYMLINK
-          w_long @symbols[node]
-        else
-          @symbols[node] = @symbols.size
-          str = node.to_s
-          unless str.encoding.ascii_compatible? && str.ascii_only?
-            raise 'TODO: encoding'
-          end
-
-          w_byte 0x3A # ':', TYPE_SYMBOL
-          w_bytes str
-        end
+        w_symbol(node)
+      elsif node.is_a?(Float)
+        raise 'TODO: Float'
+      elsif node.is_a?(Metamarshal::MetaObject)
+        @data[node.object_id] = @data.size
+        w_byte 0x6F # 'o', TYPE_OBJECT
+        w_unique node.klass
+        w_objivar node, limit
       elsif node.is_a?(Metamarshal::MetaArray)
         @data[node.object_id] = @data.size
         w_byte 0x5B # '[', TYPE_ARRAY
         w_long node.data.size
         node.data.each do |element|
-          w_object(element, limit - 1)
+          w_object(element, limit)
         end
       else
         raise "TODO: #{node.class}"

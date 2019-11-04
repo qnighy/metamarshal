@@ -45,6 +45,31 @@ class GeneratorRoundTripTest < Minitest::Test
     assert_round_trip MetaArray.new(%i[foo bar bar foo])
   end
 
+  def test_object
+    assert_round_trip(
+      MetaObject.new(
+        :Range,
+        {
+          excl: false,
+          begin: 1,
+          end: 2
+        }
+      )
+    )
+
+    assert_round_trip(
+      MetaObject.new(
+        :Matrix,
+        {
+          "@rows": MetaArray.new(
+            [MetaArray.new([1, 2]), MetaArray.new([3, 4])]
+          ),
+          "@column_count": 2
+        }
+      )
+    )
+  end
+
   def test_array
     assert_round_trip MetaArray.new([])
     assert_round_trip MetaArray.new([1])
