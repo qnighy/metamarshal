@@ -15,7 +15,7 @@ Metamarshal is totally work-in-progress for now:
   - [ ] Old user-defined marshal data (`u`)
   - [ ] User-defined marshal data (`U`)
   - [ ] User-defined marshal data for TData (`d`)
-  - [ ] Plain object (`o`)
+  - [x] Plain object (`o`)
   - [ ] Float (`f`)
   - [ ] Bignum (`l`)
   - [ ] String (`"`)
@@ -27,19 +27,20 @@ Metamarshal is totally work-in-progress for now:
   - [ ] Old Class or Module (`M`)
   - [ ] Class (`c`)
   - [ ] Module but not Class (`m`)
-  - [ ] Symbol (`:`)
-  - [ ] Symbol link (`;`)
+  - [x] Symbol (`:`)
+    - [ ] encoded symbols
+  - [x] Symbol link (`;`)
   - [ ] Extension of an object by a module (`e`)
   - [ ] Instance variables of String/Regexp/Array/Hash (`I`)
   - [x] link (`@`)
-- Printing
+- Generation
   - [ ] nil (`0`), true (`T`), false (`F`)
   - [ ] Fixnum
   - [ ] Subclasses of String/Regexp/Array/Hash (`C`)
   - [ ] Old user-defined marshal data (`u`)
   - [ ] User-defined marshal data (`U`)
   - [ ] User-defined marshal data for TData (`d`)
-  - [ ] Plain object (`o`)
+  - [x] Plain object (`o`)
   - [ ] Float (`f`)
   - [ ] Bignum (`l`)
   - [ ] String (`"`)
@@ -51,13 +52,14 @@ Metamarshal is totally work-in-progress for now:
   - [ ] Old Class or Module (`M`)
   - [ ] Class (`c`)
   - [ ] Module but not Class (`m`)
-  - [ ] Symbol (`:`)
-  - [ ] Symbol link (`;`)
+  - [x] Symbol (`:`)
+    - [ ] encoded symbols
+  - [x] Symbol link (`;`)
   - [ ] Extension of an object by a module (`e`)
   - [ ] Instance variables of String/Regexp/Array/Hash (`I`)
   - [ ] link (`@`)
 - Realization
-- Unrealization
+- Lifting
 - Feature
   - [ ] Iterate over parsed objects
   - [ ] Marshal-compatible load/dump interface
