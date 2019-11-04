@@ -73,6 +73,37 @@ class ParserTest < Minitest::Test
     end
   end
 
+  def test_object
+    assert_syn_isomorphic(
+      MetaObject.new(
+        :Range,
+        {
+          excl: false,
+          begin: 1,
+          end: 2
+        }
+      ),
+      parse("\x04\x08o:\x0ARange\x08:\texclF:\x0Abegini\x06:\x08endi\x07")
+    )
+
+    assert_syn_isomorphic(
+      MetaObject.new(
+        :Matrix,
+        {
+          "@rows": MetaArray.new(
+            [MetaArray.new([1, 2]), MetaArray.new([3, 4])]
+          ),
+          "@column_count": 2
+        }
+      ),
+      parse(
+        "\x04\x08o:\x0BMatrix\x07" \
+        ":\x0A@rows[\x07[\x07i\x06i\x07[\x07i\x08i\x09" \
+        ":\x12@column_counti\x07"
+      )
+    )
+  end
+
   def test_array
     assert_syn_isomorphic(
       MetaArray.new([1, 2, 3]),

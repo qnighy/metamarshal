@@ -55,6 +55,18 @@ class MetaValueTest < Minitest::Test
       'Metamarshal::MetaArray.new([1, 2, 3])'
     )
 
+    assert_equal(
+      Metamarshal::MetaObject.new(
+        :Range,
+        {
+          excl: false,
+          begin: 1,
+          end: 2
+        }
+      ).inspect,
+      'Metamarshal::MetaObject.new(:Range, {:excl=>false, :begin=>1, :end=>2})'
+    )
+
     cycle1 = Metamarshal::MetaArray.new([]).tap do |a|
       a.data << a
     end
@@ -73,6 +85,23 @@ class MetaValueTest < Minitest::Test
       PP.pp(Metamarshal::MetaArray.new([1, 2, 3]), +'', 30),
       "Metamarshal::MetaArray.new(\n" \
       " [1, 2, 3])\n"
+    )
+
+    assert_equal(
+      PP.pp(
+        Metamarshal::MetaObject.new(
+          :Range,
+          {
+            excl: false,
+            begin: 1,
+            end: 2
+          }
+        ),
+        +'',
+        79
+      ),
+      'Metamarshal::MetaObject.new(:Range, ' \
+      "{:excl=>false, :begin=>1, :end=>2})\n"
     )
 
     cycle1 = Metamarshal::MetaArray.new([]).tap do |a|

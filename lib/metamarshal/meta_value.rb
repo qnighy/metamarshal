@@ -46,7 +46,12 @@ module Metamarshal
     # nil is interpreted as a default class for that type.
     #
     # @return [nil, Symbol]
-    attr_reader :klass
+    attr_accessor :klass
+
+    # A set of instance variables.
+    #
+    # @return [Hash{Symbol=>Metamarshal::MetaValue}]
+    attr_reader :ivars
 
     # Auxiliary data for non-plain objects.
     #
@@ -55,13 +60,18 @@ module Metamarshal
 
     # @param type [Symbol]
     # @param klass [nil, Symbol]
+    # @param ivars [Hash{Symbol=>Metamarshal::MetaValue}]
     # @param data [Object]
-    def initialize(type, klass = nil, data = nil)
+    # @return [void]
+    def initialize(type, klass = nil, ivars = {}, data = nil)
       @type = type
       @klass = klass
+      @ivars = ivars
       @data = data
     end
 
+    # @param obj [Metamarshal::MetaReference]
+    # @return [void]
     def initialize_copy(obj)
       self.itself = obj
     end
@@ -69,9 +79,11 @@ module Metamarshal
     # Updates itself in-place, copying from the other.
     #
     # @param other [Metamarshal::MetaReference] the other to copy from
+    # @return [void]
     def itself=(other)
       @type = other.type
       @klass = other.klass
+      @ivars = other.ivars.dup
       @data = other.data.dup
     end
 
@@ -100,7 +112,7 @@ module Metamarshal
 
     # Overrides {Object#is_a?} to allow changing types in-place.
     #
-    # @param klass [Module] a class or a module
+    # @param klass [Module, Class] a class or a module
     # @return [Boolean]
     def is_a?(klass)
       super || self.class >= klass
@@ -134,6 +146,7 @@ module Metamarshal
     # Overrides {PPMixin#pretty_print} for debug pretty-printing.
     #
     # @param q [PP] the pretty-printer
+    # @return [void]
     def pretty_print(q)
       self.class.send(:instance_pretty_print, self, q)
     end
@@ -141,6 +154,7 @@ module Metamarshal
     # Overrides {PPMixin#pretty_print_cycle} for debug pretty-printing.
     #
     # @param q [PP] the pretty-printer
+    # @return [void]
     def pretty_print_cycle(q)
       self.class.send(:instance_pretty_print_cycle, self, q)
     end
@@ -159,6 +173,7 @@ module Metamarshal
         'Metamarshal::MetaReference.new(' \
         "#{obj.type.inspect}, " \
         "#{obj.klass.inspect}, " \
+        "#{obj.ivars.inspect}, " \
         "#{obj.data.inspect}" \
       ')'
       end
@@ -173,6 +188,8 @@ module Metamarshal
           q.pp(obj.type)
           q.comma_breakable
           q.pp(obj.klass)
+          q.comma_breakable
+          q.pp(obj.ivars)
           q.comma_breakable
           q.pp(obj.data)
         end
@@ -189,20 +206,23 @@ module Metamarshal
     MetaReference.const_get(:CLASS_MAP)[:object] = self
 
     # @param klass [nil, Symbol] A class name of the object being represented
-    def initialize(klass)
+    # @param ivars [Hash{Symbol=>Metamarshal::MetaValue}]
+    # @return [void]
+    def initialize(klass, ivars = {})
       # See define_method(:new) below for the actual implementation.
-      super(:object, klass)
+      super(:object, klass, ivars)
     end
 
     class <<self
-      define_method(:new) do |klass|
-        MetaReference.new(:object, klass)
+      define_method(:new) do |klass, ivars = {}|
+        MetaReference.new(:object, klass, ivars)
       end
 
       private
 
       def instance_inspect(obj)
-        "Metamarshal::MetaObject.new(#{obj.klass.inspect})"
+        "Metamarshal::MetaObject.new(#{obj.klass.inspect}, " \
+        "#{obj.ivars.inspect})"
       end
 
       def instance_inspect_cycle(_obj)
@@ -213,6 +233,8 @@ module Metamarshal
         q.group(1, 'Metamarshal::MetaObject.new(', ')') do
           q.breakable('')
           q.pp(obj.klass)
+          q.comma_breakable
+          q.pp(obj.ivars)
         end
       end
 
@@ -226,6 +248,7 @@ module Metamarshal
   class MetaString < MetaReference
     MetaReference.const_get(:CLASS_MAP)[:string] = self
 
+    # @return [void]
     def initialize
       # See define_method(:new) below for the actual implementation.
       super(:string, nil)
@@ -261,14 +284,15 @@ module Metamarshal
     MetaReference.const_get(:CLASS_MAP)[:array] = self
 
     # @param elements [Array<Metamarshal::MetaValue>] A list of elements.
+    # @return [void]
     def initialize(elements)
       # See define_method(:new) below for the actual implementation.
-      super(:array, nil, elements)
+      super(:array, nil, {}, elements)
     end
 
     class <<self
       define_method(:new) do |elements|
-        MetaReference.new(:array, nil, elements)
+        MetaReference.new(:array, nil, {}, elements)
       end
 
       private

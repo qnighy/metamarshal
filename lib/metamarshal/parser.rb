@@ -133,6 +133,60 @@ module Metamarshal
       r_bytes0(r_long)
     end
 
+    # @param type [Integer]
+    # @param ivar [Boolean]
+    # @return [Symbol]
+    def r_symbol0(type, ivar)
+      case type
+      when 0x3A # ':', TYPE_SYMBOL
+        # TODO: encoding
+        raise 'TODO' if ivar
+
+        v = r_bytes.to_sym
+        @symbols << v
+        v
+      when 0x3B # ';', TYPE_SYMLINK
+        raise ArgumentError, 'dump format error (symlink with encoding)' if ivar
+
+        num = r_long
+        raise ArgumentError, 'bad symbol' unless 0 <= num && num < @symbols.size
+
+        @symbols[num]
+      else
+        raise(
+          ArgumentError,
+          format(
+            'dump format error for symbol(0x%<type>x)',
+            type: type
+          )
+        )
+      end
+    end
+
+    # @return [Symbol]
+    def r_symbol
+      ivar = false
+      type = r_byte
+      if type == 0x49 # 'I', TYPE_IVAR
+        ivar = true
+        type = r_byte
+      end
+      r_symbol0(type, ivar)
+    end
+    alias r_unique r_symbol
+
+    # @param v [Metamarshal::MetaReference]
+    # @return [void]
+    def r_ivar(v) # rubocop:disable Naming/UncommunicativeMethodParamName
+      len = r_long
+      len.times do
+        sym = r_symbol
+        val = r_object
+        # TODO: check for `@`
+        v.ivars[sym] = val
+      end
+    end
+
     # @return [Metamarshal::MetaValue]
     def r_object
       type = r_byte
@@ -152,6 +206,11 @@ module Metamarshal
         false
       when 0x69 # 'i', TYPE_FIXNUM
         r_long
+      when 0x6F # 'o', TYPE_OBJECT
+        @data << (v = MetaObject.new(nil))
+        v.klass = r_unique
+        r_ivar(v)
+        v
       when 0x5B # '[', TYPE_ARRAY
         len = r_long
         v = MetaArray.new(Array.new(len))
@@ -164,15 +223,9 @@ module Metamarshal
         @readable += 1
         v
       when 0x3A # ':', TYPE_SYMBOL
-        # TODO: encoding
-        v = r_bytes.to_sym
-        @symbols << v
-        v
+        r_symbol0(type, false)
       when 0x3B # ';', TYPE_SYMLINK
-        num = r_long
-        raise ArgumentError, 'bad symbol' unless 0 <= num && num < @symbols.size
-
-        @symbols[num]
+        r_symbol0(type, false)
       else
         raise ArgumentError, format('dump format error(0x%<type>x)', type: type)
       end
